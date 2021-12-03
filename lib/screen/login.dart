@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'package:hanbat/screen/disinfection.dart';
+import 'package:hanbat/screen/signup.dart';
+import 'package:hanbat/constants.dart';
+import 'home.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -9,7 +14,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextStyle style = const TextStyle(fontFamily: 'CupertinoIcons', fontSize: 13.0);
   final TextEditingController _mailCon = TextEditingController();
   final TextEditingController _pwCon = TextEditingController();
 
@@ -47,28 +51,43 @@ class _LoginPageState extends State<LoginPage> {
     final signUp = TextButton(
       style: TextButton.styleFrom(
         textStyle: style,
-        primary: const Color(0xff5D5FEF),
+        primary: hPrimaryColor,
       ),
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SignUpPage())
+          );
+        },
       child: const Text("회원가입"),
     );
 
     final findID = TextButton(
       style: TextButton.styleFrom(
         textStyle: style,
-        primary: const Color(0xff5D5FEF),
+        primary: hPrimaryColor,
       ),
-      onPressed: () {},
+      onPressed: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Search())
+        );
+      },
       child: const Text("아이디/ 비밀번호 찾기"),
     );
 
     final loginButton = Material(
       elevation: 5.0,
       borderRadius: BorderRadius.circular(10.0),
-      color: const Color(0xff5D5FEF),
+      color: hPrimaryColor,
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Disinfection())
+          );
+        },
         child: Text("로그인",
           textAlign: TextAlign.center,
           style: style.copyWith(
@@ -81,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
       gradient: LinearGradient(
         colors: [
           Colors.grey,
-          Color(0xff5D5FEF),
+          hPrimaryColor,
         ],
         begin: FractionalOffset(0.0, 0.0),
         end: FractionalOffset(1.0, 1.0),
@@ -93,7 +112,7 @@ class _LoginPageState extends State<LoginPage> {
     const social = Text("간편 로그인",
         style: TextStyle(
           fontSize: 13.0,
-          color: Color(0xff5D5FEF)
+          color: hPrimaryColor,
         ),
     );
 
@@ -101,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
       gradient: LinearGradient(
           colors: [
             Colors.grey,
-            Color(0xff5D5FEF),
+            hPrimaryColor,
           ],
           begin: FractionalOffset(1.0, 1.0),
           end: FractionalOffset(0.0, 0.0),

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "9468853723",
+    "project_id": "farmonda-437d5",
+    "storage_bucket": "farmonda-437d5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9468853723:android:494ae58c83c53f6228bbfe",
+        "android_client_info": {
+          "package_name": "com.example.hanbat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9468853723-je9s0edsogaunn9p1md6fltsrca0pi6b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hanbat",
+            "certificate_hash": "90133ccc6f753dcf0480a8af73185e3fcb54dac8"
+          }
+        },
+        {
+          "client_id": "9468853723-lr1j80sh99a1pkjtpr6jt3mg0afqc4ge.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUUCNgAxM_C6K7gUdMNUcjtUcSFV6nd4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9468853723-lr1j80sh99a1pkjtpr6jt3mg0afqc4ge.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
