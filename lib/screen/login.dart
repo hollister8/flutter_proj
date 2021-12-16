@@ -14,8 +14,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _mailCon = TextEditingController();
-  final TextEditingController _pwCon = TextEditingController();
+  final _mailCon = TextEditingController();
+  final _nameCon = TextEditingController();
+  final _pwCon = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => SignUpPage())
+            MaterialPageRoute(builder: (context) => SignUpPage(registerAccount: (String email, String displayName, String password) {  },))
           );
         },
       child: const Text("회원가입"),
@@ -74,26 +75,6 @@ class _LoginPageState extends State<LoginPage> {
         );
       },
       child: const Text("아이디/ 비밀번호 찾기"),
-    );
-
-    final loginButton = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(10.0),
-      color: hPrimaryColor,
-      child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
-        onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Disinfection())
-          );
-        },
-        child: Text("로그인",
-          textAlign: TextAlign.center,
-          style: style.copyWith(
-            color: Colors.white)
-          ),
-      ),
     );
 
     const lLine = BoxDecoration(
@@ -192,7 +173,19 @@ class _LoginPageState extends State<LoginPage> {
                 Column(
                   children: [
                     const SizedBox(height: 30.0,),
-                    loginButton,
+                    StyledButton(
+                      child: Text("로그인",
+                          textAlign: TextAlign.center,
+                          style: style.copyWith(
+                              color: Colors.white)
+                             ),
+                      onPressed: () {
+                        Navigator.push(
+                            context, MaterialPageRoute(
+                            builder: (context) => Disinfection())
+                        );
+                      },
+                    ),
                   ],
                 ),
                 Row(

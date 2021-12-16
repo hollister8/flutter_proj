@@ -7,4 +7,21 @@ const hBackgroundColor = Color(0xffECE8F4);
 
 TextStyle style = const TextStyle(fontFamily: 'CupertinoIcons', fontSize: 13.0);
 
-// const double hDefaultPadding = 20.0;
+class StyledButton extends StatelessWidget {
+  const StyledButton({required this.child, required this.onPressed});
+  final Widget child;
+  final void Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) => Material(
+    elevation: 5.0,
+    borderRadius: BorderRadius.circular(10.0),
+      color: hPrimaryColor,
+    child: MaterialButton(
+      minWidth: MediaQuery.of(context).size.width,
+      height: 50,
+  onPressed: onPressed,
+  child: child,
+    ),
+  );
+}

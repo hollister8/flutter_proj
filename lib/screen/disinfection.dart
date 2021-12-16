@@ -31,6 +31,7 @@ class _DisinfectionState extends State<Disinfection> {
       color: hPrimaryColor,
       child: MaterialButton(
         minWidth: MediaQuery.of(context).size.width,
+        height: 50,
         onPressed: () {
           Navigator.pop(context);
         },
