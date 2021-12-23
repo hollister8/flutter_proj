@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import 'package:hanbat/screen/home.dart';
+import 'package:hanbat/models/model.dart';
 
 part 'open_api.g.dart';
 

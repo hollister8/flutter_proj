@@ -5,13 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hanbat/constants.dart';
+import 'package:hanbat/models/model.dart';
 import 'package:naver_map_plugin/naver_map_plugin.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-
-part 'home.g.dart';
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -24,10 +21,13 @@ class _SearchState extends State<Search> {
   // final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   late Stream<QuerySnapshot> streamData;
+
   @override
-  void iniState() {
+  void initState() {
     super.initState();
     streamData = firestore.collection('data').snapshots();
+    readJson();
+    print('readJson');
   }
 
   Widget _buildBody(BuildContext context) {
@@ -51,10 +51,9 @@ class _SearchState extends State<Search> {
         child: ListView(
           padding: const EdgeInsets.all(3),
           children: searchResults
-              .map((data) => _buildListItem(context, data))
-              .toList()),
-            // .map((data) => SearchBase(pstn_dsnf_plc_nm: snapshot.data.docs[index]['PSTN_DSNF_PLC_NM'],)
-            // .toList()),
+            .map((data) => _buildListItem(context, data))
+            .toList()
+        ),
     );
   }
 
@@ -110,31 +109,15 @@ class _SearchState extends State<Search> {
     });
    }
 
-  Future<void> readJson() async {
-    String jsonString = await rootBundle.loadString('json/거점소독시설.json');
+  Future <void> readJson() async {
+    String jsonString  = await rootBundle.loadString('json/거점소독시설.json');
     final jsonResponse = jsonDecode(jsonString);
+    var facility = SearchBase.fromJson(jsonResponse);
+    print(facility);
   }
 
   @override
   Widget build(BuildContext context) {
-
-    final search = Material(
-      elevation: 5.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10.0)),
-      child: const TextField(
-        style: TextStyle(
-          fontSize: 13.0,
-        ),
-        decoration: InputDecoration(
-          filled: true,
-          prefixIcon: Icon(Icons.search),
-          hintText: "거점소독소를 검색하세요.",
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        ),
-      ),
-    );
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -160,12 +143,14 @@ class _SearchState extends State<Search> {
                   Expanded(child:
                   Material(
                     elevation: 5,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0)),
                     child: TextField(
                       style: const TextStyle(
                         fontSize: 13.0,
                       ),
                       onTap: () {
-                        _focusListen;
+
                         },
                       focusNode: focusNode,
                       controller: _filter,
@@ -202,9 +187,9 @@ class _SearchState extends State<Search> {
                               ),
                             )
                           : Container(),
+                        ),
                       ),
                     ),
-                  ),
                   ),
                 const SizedBox(height: 10,),
                 StreamBuilder<QuerySnapshot>(
@@ -225,34 +210,40 @@ class _SearchState extends State<Search> {
                                   children: [
                                     _buildBody(context)
                                   ],
-                                )),
-                          ));
+                                )
+                            ),
+                          )
+                      );
                     }
-                )
+                  )
                 ],
               ),
             ),
             Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                height: MediaQuery.of(context).size.height * 0.35,
-                margin: const EdgeInsets.only(top: 30.0),
-                color: Colors.white,
-                child: Card(
-                  elevation: 5.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              child: Expanded(
+                child: Container( // ListView.builder(itemBuilder: context) 추가
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  height: MediaQuery.of(context).size.height * 0.35,
+                  margin: const EdgeInsets.only(top: 30.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const SizedBox(
-                    child: NaverMap(
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(37.566570, 126.978442),
-                        zoom: 17,
+                  child: Card(
+                    elevation: 5.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: const SizedBox(
+                      child: NaverMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(37.566570, 126.978442),
+                          zoom: 17,
+                        ),
+                        //onMapCreated: _onMapCreated,
+                        // onMapTap: _onMapTap,
+                        // markers: _markers,
+                        initLocationTrackingMode: LocationTrackingMode.NoFollow,
                       ),
-                      //onMapCreated: _onMapCreated,
-                      // onMapTap: _onMapTap,
-                      // markers: _markers,
-                      initLocationTrackingMode: LocationTrackingMode.NoFollow,
                     ),
                   ),
                 ),
@@ -273,46 +264,3 @@ class _SearchState extends State<Search> {
 // void _naverMapController() {}
 //
 // void _onMapTap(LatLng latLng) {}
-
-@JsonSerializable()
-class SearchBase {
-  @JsonKey(name: 'PSTN_DSNF_PLC_NO')
-  int pstn_dsnf_plc_no;
-  @JsonKey(name: 'PSTN_DSNF_PLC_NM')
-  String pstn_dsnf_plc_nm;
-  @JsonKey(name: 'ADDR')
-  String addr;
-  @JsonKey(name: 'PIC_TELNO')
-  String telno;
-  @JsonKey(name: 'LOT')
-  double lot;
-  @JsonKey(name: 'LAT')
-  double lat;
-
-  var reference;
-  // final DocumentReference reference;
-
-  SearchBase({
-    required this.pstn_dsnf_plc_no,
-    required this.pstn_dsnf_plc_nm,
-    required this.addr,
-    required this.telno,
-    required this.lot,
-    required this.lat,
-    required this.reference,
-  });
-
-  // factory SearchBase.fromJson(Map<String, dynamic> json {this.reference}) => _$SearchBaseFromJson(json);
-  // Map<String, dynamic> toJson() => _$SearchBaseToJson(this);
-
-  SearchBase.fromJson(Map<String, dynamic> json, {this.reference})
-    : pstn_dsnf_plc_nm = json['pstn_dsnf_plc_nm'],
-      pstn_dsnf_plc_no = json['pstn_dsnf_plc_no'],
-      addr = json['addr'];
-
-  SearchBase.fromSnapshot(DocumentSnapshot snapshot)
-    : this.fromJson(snapshot.data, reference: snapshot.reference);
-
-  @override
-  String toString() => "Base<$pstn_dsnf_plc_nm>";
-}
