@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hanbat/screen/disinfection.dart';
 import 'package:hanbat/screen/signup.dart';
 import 'package:hanbat/constants.dart';
+import 'package:kakao_flutter_sdk/all.dart';
 import 'home.dart';
 
 class LoginPage extends StatefulWidget {
@@ -17,6 +18,41 @@ class _LoginPageState extends State<LoginPage> {
   final _mailCon = TextEditingController();
   final _nameCon = TextEditingController();
   final _pwCon = TextEditingController();
+
+  var validateToken;
+
+  _issueAccessToken(String authCode) async {
+    try {
+      var token = await AuthApi.instance.issueAccessToken(authCode);
+
+      if (validateToken.refreshToken == null) {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const LoginPage(), // 로그인 화면으로 다시 가야 함
+            ));
+      } else {
+        /// 카카오 로그인 성공시 사용자 정보 print
+        var kakaoUser = await UserApi.instance.me();
+
+        print('> kakao id : ${kakaoUser.id.toString()}');
+        print('> nickname : ${kakaoUser.properties!['nickname']}');
+        print(
+            '> thumbnail_image : ${kakaoUser.properties!['thumbnail_image']}');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  _loginWithKakao() async {
+    try {
+      var code = await AuthCodeClient.instance.request();
+      await _issueAccessToken(code);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
     );
 
     final kakaoLogin = GestureDetector(
-      onTap: () => {},
+      onTap: () => {_loginWithKakao()},
       child: Container(
         margin: const EdgeInsets.only(top: 30.0),
         padding: const EdgeInsets.all(23.0),
@@ -212,7 +248,9 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    kakaoLogin, naverLogin, googleLogin,
+                    kakaoLogin,
+                    naverLogin,
+                    googleLogin,
                   ],
                 ),
               ],
