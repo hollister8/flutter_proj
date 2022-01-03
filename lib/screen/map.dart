@@ -1,17 +1,21 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:hanbat/constants.dart';
 import 'package:hanbat/models/base.dart';
+import 'package:hanbat/models/mybase_list.dart';
 import 'package:hanbat/screen/home.dart';
 import 'package:naver_map_plugin/naver_map_plugin.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 class MapPage extends StatelessWidget {
-  final DatabaseReference reference;
+  // final DatabaseReference reference;
   final Base base;
 
-  const MapPage({Key? key, required this.base, required this.reference}) : super(key: key); //
+  const MapPage({Key? key, required this.base}) : super(key: key); // , required this.reference
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +42,13 @@ class MapPage extends StatelessWidget {
                 child: Icon(Icons.add),
                 backgroundColor: hPrimaryColor,
                 onPressed: () {
-                  reference
-                      .push()
-                      .set(
-                    base.pstn_dsnf_plc_nm,
-                  ).then((_) {
-                    Navigator.of(context).pop();
-                    });
+                  // reference
+                  //     .push()
+                  //     .set(
+                  //   base.pstn_dsnf_plc_nm,
+                  // ).then((_) {
+                  //   Navigator.of(context).pop();
+                  //   });
                   },
                 ),
               ],
@@ -54,14 +58,15 @@ class MapPage extends StatelessWidget {
               minWidth: 80,
               height: 40,
               color: hPrimaryColor,
-              child: Text("추가하기",
+              child: const Text("추가하기",
                   textAlign: TextAlign.center,
-                  style: style.copyWith(color: Colors.white)),
+                  style: TextStyle(color: Colors.white),
+              ),
               onPressed: (){
                 Navigator.pop(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => Search(base: base[index],)
+                      builder: (context) => Search()
                   ),
                 );
               }

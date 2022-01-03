@@ -8,15 +8,17 @@ import 'package:flutter/services.dart';
 import 'package:hanbat/constants.dart';
 import 'package:hanbat/models/base.dart';
 import 'package:hanbat/models/model.dart';
+import 'package:hanbat/models/mybase_list.dart';
 import 'package:hanbat/screen/map.dart';
 import 'package:naver_map_plugin/naver_map_plugin.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 class Search extends StatefulWidget {
-  final List<Base> base;
+  // final List<Base> base;
+  // final MyBase mybase;
 
-  const Search({Key? key, required this.base}) : super(key: key); //
+  const Search({Key? key}) : super(key: key); // , required this.base // , required this.mybase
 
   @override
   _SearchState createState() => _SearchState();
@@ -27,7 +29,7 @@ class _SearchState extends State<Search> {
   DatabaseReference? reference;
   final String _databaseURL = 'https://farmonda-437d5-default-rtdb.firebaseio.com/';
   List<Base> bases = List.empty(growable: true);
-  // List<BaseList> baseList = List.empty(growable: true);
+  List<MyBase> baselist = List.empty(growable: true);
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   late Stream<QuerySnapshot> streamData;
@@ -100,7 +102,7 @@ class _SearchState extends State<Search> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => MapPage(base: bases[index], reference: reference!, ))
+                            builder: (context) => MapPage(base: bases[index])) // , reference: reference!
                         );
                       },
                     ),
@@ -297,13 +299,15 @@ class _SearchState extends State<Search> {
               ),
             ),
             Center(
-              child: base.length == 0
-                ? Text("추가한 거점소독소가 없습니다.",)
+              child: baselist.length == 0
+                ? Text("추가한 거점소독소가 없습니다.",
+                    style: TextStyle(color: Colors.black45),
+                  )
                 : Expanded(
                   child: SizedBox(
                     height: 500,
                     child: ListView.builder(
-                        itemCount: base.length,
+                        itemCount: baselist.length,
                         itemBuilder: (context, position) {
                           return Card(
                             elevation: 5.0,
