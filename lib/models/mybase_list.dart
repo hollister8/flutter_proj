@@ -4,24 +4,45 @@ import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-void mybase_list() async {
-  final database = openDatabase(
-    // 데이터베이스 경로를 지정합니다. 참고: `path` 패키지의 `join` 함수를 사용하는 것이
-    // 각 플랫폼 별로 경로가 제대로 생성됐는지 보장할 수 있는 가장 좋은 방법입니다.
-    join(await getDatabasesPath(), 'mybase_database.db'),
-    // 데이터베이스가 처음 생성될 때, mybase를 저장하기 위한 테이블을 생성합니다.
-    onCreate: (db, version) {
-      return db.execute(
-        // "CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age INTEGER)",
-        "CREATE TABLE baselist("
-            "pstn_dsnf_plc_nm TEXT, addr TEXT, telno TEXT, lat DOUBLE, lot DOUBLE"
-            ")",
-      );
-    },
-    // 버전을 설정하세요. onCreate 함수에서 수행되며 데이터베이스 업그레이드와 다운그레이드를
-    // 수행하기 위한 경로를 제공합니다.
-    version: 1,
-  );
+class MybaseList  {
+  // final database = openDatabase(
+  //   // 데이터베이스 경로를 지정합니다. 참고: `path` 패키지의 `join` 함수를 사용하는 것이
+  //   // 각 플랫폼 별로 경로가 제대로 생성됐는지 보장할 수 있는 가장 좋은 방법입니다.
+  //   join(await getDatabasesPath(), 'mybase_database.db'),
+  //   // 데이터베이스가 처음 생성될 때, mybase를 저장하기 위한 테이블을 생성합니다.
+  //   onCreate: (db, version) {
+  //     return db.execute(
+  //       // "CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age INTEGER)",
+  //       "CREATE TABLE baselist("
+  //           "id INTEGER PRIMARY KEY, pstn_dsnf_plc_nm TEXT, addr TEXT, telno TEXT, lat DOUBLE, lot DOUBLE"
+  //           ")",
+  //     );
+  //   },
+  //   // 버전을 설정하세요. onCreate 함수에서 수행되며 데이터베이스 업그레이드와 다운그레이드를
+  //   // 수행하기 위한 경로를 제공합니다.
+  //   version: 1,
+  // );
+  var database = null;
+  Future<void> createMybase() async {
+      database = openDatabase(
+      // 데이터베이스 경로를 지정합니다. 참고: `path` 패키지의 `join` 함수를 사용하는 것이
+      // 각 플랫폼 별로 경로가 제대로 생성됐는지 보장할 수 있는 가장 좋은 방법입니다.
+      join(await getDatabasesPath(), 'mybase_database.db'),
+      // 데이터베이스가 처음 생성될 때, mybase를 저장하기 위한 테이블을 생성합니다.
+      onCreate: (db, version) {
+        print("안녕하세요");
+        return db.execute(
+          // "CREATE TABLE dogs(id INTEGER PRIMARY KEY, name TEXT, age INTEGER)",
+          "CREATE TABLE baselist("
+              "id INTEGER PRIMARY KEY, pstn_dsnf_plc_nm TEXT, addr TEXT, telno TEXT, lat DOUBLE, lot DOUBLE"
+              ")",
+        );
+      },
+      // 버전을 설정하세요. onCreate 함수에서 수행되며 데이터베이스 업그레이드와 다운그레이드를
+      // 수행하기 위한 경로를 제공합니다.
+      version: 1,
+    );
+  }
 
   Future<void> insertMybase(MyBase mybase) async {
     // 데이터베이스 reference를 얻습니다.
@@ -71,26 +92,26 @@ void mybase_list() async {
     );
   }
 
-  var fido = MyBase(
-    id: 0,
-    pstn_dsnf_plc_nm: '한밭거점소독소',
-    addr: '대전 동구',
-    telno: '010-1234-5678',
-    lat: 56.12,
-    lot: 127.5363,
-  );
-
-  // 데이터베이스에 dog를 추가합니다.
-  await insertMybase(fido);
-
-  // dog 목록을 출력합니다. (지금은 Fido만 존재합니다.)
-  print(await baselist());
-
-  // Fido를 데이터베이스에서 제거합니다.
-  // await deleteMybase(fido);
-
-  // dog 목록을 출력합니다. (비어있습니다.)
-  //print(await baselist());
+  // var fido = MyBase(
+  //   id: 0,
+  //   pstn_dsnf_plc_nm: '한밭거점소독소',
+  //   addr: '대전 동구',
+  //   telno: '010-1234-5678',
+  //   lat: 56.12,
+  //   lot: 127.5363,
+  // );
+  //
+  // // 데이터베이스에 dog를 추가합니다.
+  // await insertMybase(fido);
+  //
+  // // dog 목록을 출력합니다. (지금은 Fido만 존재합니다.)
+  // print(await baselist());
+  //
+  // // Fido를 데이터베이스에서 제거합니다.
+  // // await deleteMybase(fido);
+  //
+  // // dog 목록을 출력합니다. (비어있습니다.)
+  // //print(await baselist());
 }
 
 class MyBase {

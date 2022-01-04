@@ -18,8 +18,11 @@ class MapPage extends StatelessWidget {
   const MapPage({Key? key, required this.base}) : super(key: key); // , required this.reference
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) async{
+    var database = MybaseList();
+    database.createMybase();
     int id = Random().nextInt(100);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(base.pstn_dsnf_plc_nm),
@@ -49,6 +52,16 @@ class MapPage extends StatelessWidget {
                   // ).then((_) {
                   //   Navigator.of(context).pop();
                   //   });
+                  var fido = MyBase(
+                    id: 0,
+                    pstn_dsnf_plc_nm: '한밭거점소독소',
+                    addr: '대전 동구',
+                    telno: '010-1234-5678',
+                    lat: 56.12,
+                    lot: 127.5363,
+                  );
+                  await database.insertMybase(fido);
+                  print(await database.baselist());
                   },
                 ),
               ],
