@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hanbat/constants.dart';
+import 'package:hanbat/screen/disinfection.dart';
 
 import 'package:hanbat/screen/login.dart';
+import 'package:hanbat/screen/signup.dart';
 
 enum ApplicationLoginState {
   loggedOut,
@@ -50,21 +52,32 @@ class Authentication extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (loginState) {
       case ApplicationLoginState.loggedOut:
-        return LoginPage();
-      // case ApplicationLoginState.emailAddress:
-      //   return EmailForm(
-      //       callback: (email) => verifyEmail(
-      //           email, (e) => _showErrorDialog(context, '잘못된 이메일입니다.', e)));
+        return LoginPage(login: (String email, String password) {  }, email: '',);
+      case ApplicationLoginState.emailAddress:
+        return EmailForm(
+            callback: (email) => verifyEmail(
+                email, (e) => _showErrorDialog(context, '잘못된 이메일입니다.', e)));
+      case ApplicationLoginState.password:
+        return PasswordForm(
+          email: email!,
+          login: (email, password) {
+            signInWithEmailAndPassword(email, password,
+                    (e) => _showErrorDialog(context, '로그인에 실패하였습니다.', e));
+          },
+        );
       // case ApplicationLoginState.password:
-      //   return PasswordForm(
-      //     email: email!,
-      //     login: (email, password) {
-      //       signInWithEmailAndPassword(email, password,
-      //               (e) => _showErrorDialog(context, '로그인에 실패하였습니다.', e));
-      //     },
+      //   return VerifyForm(
+      //       callback: (email) => verifyEmail(
+      //         email, (e) => _showErrorDialog(context, '잘못된 이메일입니다!@@@@@', e)
+      //       ),
+      //       email: email!,
+      //       login: (email, password) {
+      //         signInWithEmailAndPassword(email, password,
+      //             (e) => _showErrorDialog(context, '로그인에 실패!@@@@@', e));
+      //       },
       //   );
       case ApplicationLoginState.register:
-        return RegisterForm(
+        return SignUpPage(
           email: email!,
           cancel: () {
             cancelRegistration();
@@ -83,19 +96,20 @@ class Authentication extends StatelessWidget {
           },
         );
       case ApplicationLoginState.loggedIn:
-        return Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 24, bottom: 8),
-              child: StyledButton(
-                onPressed: () {
-                  signOut();
-                },
-                child: const Text('로그아웃'),
-              ),
-            ),
-          ],
-        );
+        return Disinfection();
+        //   Row(
+        //   children: [
+        //     Padding(
+        //       padding: const EdgeInsets.only(left: 24, bottom: 8),
+        //       child: StyledButton(
+        //         onPressed: () {
+        //           signOut();
+        //         },
+        //         child: const Text('로그아웃'),
+        //       ),
+        //     ),
+        //   ],
+        // );
       default:
         return Row(
           children: const [
@@ -129,8 +143,8 @@ class Authentication extends StatelessWidget {
                 Navigator.of(context).pop();
               },
               child: const Text(
-                'OK',
-                style: TextStyle(color: Colors.deepPurple),
+                '확인',
+                style: TextStyle(color: hPrimaryColor),
               ),
             ),
           ],
@@ -140,121 +154,159 @@ class Authentication extends StatelessWidget {
   }
 }
 
-class RegisterForm extends StatefulWidget {
-  const RegisterForm({
-    required this.registerAccount,
-    required this.cancel,
+class VerifyForm extends StatefulWidget {
+  const VerifyForm({
+    required this.callback,
+    required this.login,
     required this.email,
   });
   final String email;
-  final void Function(String email, String displayName, String password)
-  registerAccount;
-  final void Function() cancel;
+  final void Function(String email, String password) login;
+  final void Function(String email) callback;
+
   @override
-  _RegisterFormState createState() => _RegisterFormState();
+  _VerifyFormState createState() => _VerifyFormState();
 }
 
-class _RegisterFormState extends State<RegisterForm> {
-  final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
-  final _mailCon = TextEditingController();
-  final _nameCon = TextEditingController();
-  final _pwCon = TextEditingController();
+class _VerifyFormState extends State<VerifyForm> {
+  final _emailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _mailCon.text = widget.email;
+    _emailController.text = widget.email;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: TextFormField(
-                    controller: _mailCon,
-                    decoration: const InputDecoration(
-                      hintText: '이메일을 입력하세요',
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return '계속하려면 이메일을 입력하세요.';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: TextFormField(
-                    controller: _nameCon,
-                    decoration: const InputDecoration(
-                      hintText: 'First & last name',
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter your account name';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: TextFormField(
-                    controller: _pwCon,
-                    decoration: const InputDecoration(
-                      hintText: 'Password',
-                    ),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Enter your password';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: widget.cancel,
-                        child: const Text('CANCEL'),
-                      ),
-                      const SizedBox(width: 16),
-                      StyledButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            widget.registerAccount(
-                              _mailCon.text,
-                              _nameCon.text,
-                              _pwCon.text,
-                            );
-                          }
-                        },
-                        child: const Text('SAVE'),
-                      ),
-                      const SizedBox(width: 30),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+    return LoginPage(login: (String email, String password) {  }, email: '',);
+  }
+}
+
+// 이메일폼
+class EmailForm extends StatefulWidget {
+  const EmailForm({required this.callback});
+  final void Function(String email) callback;
+  @override
+  _EmailFormState createState() => _EmailFormState();
+}
+
+class _EmailFormState extends State<EmailForm> {
+  final _formKey = GlobalKey<FormState>(debugLabel: '_EmailFormState');
+  final _controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return LoginPage(login: (String email, String password) {  }, email: '',);
+    //   Column(
+    //   children: [
+    //     Padding(
+    //       padding: const EdgeInsets.all(8.0),
+    //       child: Form(
+    //         key: _formKey,
+    //         child: Column(
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: <Widget>[
+    //             Padding(
+    //               padding: const EdgeInsets.symmetric(horizontal: 24),
+    //               child: TextFormField(
+    //                 controller: _controller,
+    //                 decoration: const InputDecoration(
+    //                   hintText: '이메일을 입력하세요',
+    //                 ),
+    //                 validator: (value) {
+    //                   if (value!.isEmpty) {
+    //                     return '계속하려면 이메일을 입력하세요~~~';
+    //                   }
+    //                   return null;
+    //                 },
+    //               ),
+    //             ),
+    //             Row(
+    //               mainAxisAlignment: MainAxisAlignment.end,
+    //               children: [
+    //                 Padding(
+    //                   padding: const EdgeInsets.symmetric(
+    //                       vertical: 16.0, horizontal: 30),
+    //                   child: StyledButton(
+    //                     onPressed: () async {
+    //                       if (_formKey.currentState!.validate()) {
+    //                         widget.callback(_controller.text);
+    //                       }
+    //                     },
+    //                     child: const Text('다음'),
+    //                   ),
+    //                 ),
+    //               ],
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ),
+    //   ],
+    // );
+  }
+}
+
+// class RegisterForm extends StatefulWidget {
+//   const RegisterForm({
+//     required this.registerAccount,
+//     required this.cancel,
+//     required this.email,
+//   });
+//   final String email;
+//   final void Function(String email, String displayName, String password)
+//   registerAccount;
+//   final void Function() cancel;
+//   @override
+//   _RegisterFormState createState() => _RegisterFormState();
+// }
+//
+// class _RegisterFormState extends State<RegisterForm> {
+//   final _formKey = GlobalKey<FormState>(debugLabel: '_RegisterFormState');
+//   final _mailCon = TextEditingController();
+//   final _nameCon = TextEditingController();
+//   final _pwCon = TextEditingController();
+//
+//   var registerAccount;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _mailCon.text = widget.email;
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return SignUpPage(registerAccount: registerAccount);
+//   }
+// }
+
+class PasswordForm extends StatefulWidget {
+  const PasswordForm({
+    required this.login,
+    required this.email,
+  });
+  final String email;
+  final void Function(String email, String password) login;
+  @override
+  _PasswordFormState createState() => _PasswordFormState();
+}
+
+class _PasswordFormState extends State<PasswordForm> {
+  final _formKey = GlobalKey<FormState>(debugLabel: '_PasswordFormState');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController.text = widget.email;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LoginPage(login: (String email, String password) {  }, email: '',);
   }
 }
 

@@ -4,17 +4,26 @@ import 'package:flutter/cupertino.dart';
 import 'package:hanbat/screen/disinfection.dart';
 import 'package:hanbat/screen/signup.dart';
 import 'package:hanbat/constants.dart';
+import 'package:hanbat/src/authentication.dart';
 import 'package:kakao_flutter_sdk/all.dart';
+import 'package:provider/provider.dart';
 import 'home.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({ // Key? key}) : super(key: key);
+
+  required this.login,
+  required this.email,
+  });
+  final String email;
+  final void Function(String email, String password) login;
 
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>(debugLabel: '_PasswordFormState');
   final _mailCon = TextEditingController();
   final _nameCon = TextEditingController();
   final _pwCon = TextEditingController();
@@ -29,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const LoginPage(), // 로그인 화면으로 다시 가야 함
+              builder: (context) => LoginPage(login: (String email, String password) {  }, email: '',), // 로그인 화면으로 다시 가야 함
             ));
       } else {
         /// 카카오 로그인 성공시 사용자 정보 print
@@ -63,7 +72,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
-    final emailField = TextField(
+    final emailField = TextFormField(
       controller: _mailCon,
       style: style,
       keyboardType: TextInputType.emailAddress,
@@ -72,9 +81,15 @@ class _LoginPageState extends State<LoginPage> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
       ),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '계속하려면 이메일을 입력하세요.';
+        }
+        return null;
+      },
     );
 
-    final passwordField = TextField(
+    final passwordField = TextFormField(
       controller: _pwCon,
       obscureText: true,
       style: style,
@@ -83,6 +98,12 @@ class _LoginPageState extends State<LoginPage> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
       ),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '계속하려면 비밀번호를 입력하세요.';
+        }
+        return null;
+      },
     );
 
     final signUp = TextButton(
@@ -93,7 +114,9 @@ class _LoginPageState extends State<LoginPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => SignUpPage(registerAccount: (String email, String displayName, String password) {  },))
+            MaterialPageRoute(builder: (context) => SignUpPage(
+              registerAccount: (String email, String displayName, String password) {
+              }, cancel: () {  }, email: '',))
           );
         },
       child: const Text("회원가입"),
@@ -189,72 +212,81 @@ class _LoginPageState extends State<LoginPage> {
           color: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(36.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const SizedBox(height: 30.0,),
-                emailField,
-                const SizedBox(height: 30.0,),
-                passwordField,
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const SizedBox(width: 1.0,),
-                    signUp,
-                    const SizedBox(width: 127.0,),
-                    findID,
-                  ],
-                ),
-                Column(
-                  children: [
                     const SizedBox(height: 30.0,),
-                    StyledButton(
-                      child: Text("로그인",
-                          textAlign: TextAlign.center,
-                          style: style.copyWith(
-                              color: Colors.white)
-                             ),
-                      onPressed: () {
-                        Navigator.push(
-                            context, MaterialPageRoute(
-                            builder: (context) => Disinfection())
-                        );
-                      },
+                    emailField,
+                    const SizedBox(height: 30.0,),
+                    passwordField,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        const SizedBox(width: 1.0,),
+                        signUp,
+                        const SizedBox(width: 127.0,),
+                        findID,
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const SizedBox(height: 30.0,),
+                        StyledButton(
+                          child: Text("로그인",
+                              textAlign: TextAlign.center,
+                              style: style.copyWith(
+                                  color: Colors.white)
+                          ),
+                          onPressed: () {
+                            // Navigator.push(
+                            //     context, MaterialPageRoute(
+                            //     builder: (context) => Disinfection())
+                            // );
+                            if (_formKey.currentState!.validate()) {
+                              widget.login(
+                                _mailCon.text,
+                                _pwCon.text,
+                              );
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(top: 50.0),
+                          decoration: lLine,
+                          width: 100.0,
+                          height: 1.0,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 50.0),
+                          child: social,
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 50.0),
+                          decoration: rLine,
+                          width: 100.0,
+                          height: 1.0,
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        kakaoLogin,
+                        naverLogin,
+                        googleLogin,
+                      ],
                     ),
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 50.0),
-                      decoration: lLine,
-                      width: 100.0,
-                      height: 1.0,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 50.0),
-                      child: social,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.only(top: 50.0),
-                      decoration: rLine,
-                      width: 100.0,
-                      height: 1.0,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    kakaoLogin,
-                    naverLogin,
-                    googleLogin,
-                  ],
-                ),
-              ],
-            ),
+              ),
           ),
         ),
       ),

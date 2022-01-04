@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hanbat/constants.dart';
-import 'package:hanbat/src/authentication.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({
     required this.registerAccount,
+    required this.cancel,
+    required this.email,
   });
+  final String email;
   final void Function(String email, String displayName, String password)
   registerAccount;
-
+  final void Function() cancel;
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -19,6 +21,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final _mailCon = TextEditingController();
   final _nameCon = TextEditingController();
   final _pwCon = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _mailCon.text = widget.email;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +45,7 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
 
-    final userName = TextField(
+    final userName = TextFormField(
       style: style,
       controller: _nameCon,
       decoration: InputDecoration(
@@ -49,6 +57,12 @@ class _SignUpPageState extends State<SignUpPage> {
         contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         hintText: '이름',
       ),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '필수 항목입니다.';
+        }
+        return null;
+      },
     );
 
     final email = TextFormField(
@@ -59,6 +73,12 @@ class _SignUpPageState extends State<SignUpPage> {
         contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         hintText: '이메일',
       ),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '필수 항목입니다.';
+        }
+        return null;
+      },
     );
 
     final password = TextFormField(
@@ -70,6 +90,12 @@ class _SignUpPageState extends State<SignUpPage> {
         contentPadding: const EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
         hintText: '비밀번호',
       ),
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '필수 항목입니다.';
+        }
+        return null;
+      },
     );
 
     final signUpButton = Material(
@@ -86,6 +112,7 @@ class _SignUpPageState extends State<SignUpPage> {
               _nameCon.text,
               _pwCon.text,
             );
+            // Navigator.of(context).pop();
           }
         },
         child: Text("회원가입",
@@ -103,40 +130,41 @@ class _SignUpPageState extends State<SignUpPage> {
           padding: const EdgeInsets.all(36.0),
             child: ListView(
               children: <Widget>[
-                Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const SizedBox(height: 20.0,),
-                  signup,
-                  const SizedBox(height: 30.0,),
-                  user,
-                  const SizedBox(height: 2.0,),
-                  userName,
-                  const SizedBox(height: 20.0,),
-                  user,
-                  const SizedBox(height: 2.0,),
-                  email,
-                  const SizedBox(height: 20.0,),
-                  user,
-                  const SizedBox(height: 2.0,),
-                  password,
-                  const SizedBox(height: 20.0,),
-                  user,
-                  const SizedBox(height: 2.0,),
-                  userName,
-                  const SizedBox(height: 20.0,),
-                  user,
-                  const SizedBox(height: 2.0,),
-                  userName,
-                  const SizedBox(height: 20.0,),
-                  user,
-                  const SizedBox(height: 2.0,),
-                  userName,
-                  const SizedBox(height: 20.0,),
-                  signUpButton,
-                ],
-              ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const SizedBox(height: 20.0,),
+                      signup,
+                      const SizedBox(height: 30.0,),
+                      user,
+                      const SizedBox(height: 2.0,),
+                      userName,
+                      const SizedBox(height: 20.0,),
+                      const Text("이메일",
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 2.0,),
+                      email,
+                      const SizedBox(height: 20.0,),
+                      const Text("비밀번호",
+                        style: TextStyle(
+                          fontSize: 13.0,
+                          color: Colors.black54,
+                        ),
+                      ),
+                      const SizedBox(height: 2.0,),
+                      password,
+                      const SizedBox(height: 20.0,),
+                      signUpButton,
+                    ],
+                  ),
+                )
             ],
           ),
         ),

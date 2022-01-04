@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:hanbat/constants.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:hanbat/src/authentication.dart';
 
 class Disinfection extends StatefulWidget {
   const Disinfection({Key? key}) : super(key: key);
@@ -48,6 +49,19 @@ class _DisinfectionState extends State<Disinfection> {
         title: const Text("전자소독필증"),
         centerTitle: true,
         backgroundColor: hPrimaryColor,
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(right: 20),
+            child: GestureDetector(
+              onTap: () {
+                // 로그아웃
+                },
+              child: const Icon(
+                Icons.account_circle
+              ),
+            ),
+          )
+        ],
       ),
       body: Center(
         child: ListView(
